@@ -2,6 +2,7 @@ import  { promises as fsPromises } from 'fs';
 import path from 'path';
 import express, { Express, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import { error } from 'console';
 
 /**
  * A type that represents a user object
@@ -69,6 +70,23 @@ app.get('/read/usernames', (req: UserRequest, res: Response) => {
   });
   res.send(usernames);
 });
+
+
+
+app.use('/read/username', addMsgToRequest);
+// a route that filters the users by the username and sends the user object to the client
+app.get('/read/username/:name', (req: UserRequest, res: Response) => {
+  let name = req.params.name;
+  let user = users.filter(user => user.username == name)
+
+  if(!user){
+    res.send({ error: 'user not found', status: 404 });
+  }
+
+  res.send(user);
+});
+
+
 
 // a middleware function that parses the request body to json
 app.use(express.json());
